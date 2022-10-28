@@ -17,4 +17,8 @@ public interface EmployeeStatusPastRepository extends JpaRepository<EmployeeStat
     List<EmployeeStatusPast> findEmployeeStatusPastByEmployeeIdAndYear(Long id, int year);
 
     List<EmployeeStatusPast> findEmployeeStatusPastByTeamIdAndYear(Long teamId, int year);
+
+    List<EmployeeStatusPast> findEmployeeStatusPastsByEmployeeIdIn(List<Long> ids);
+
+    List<EmployeeStatusPast> findEmployeeStatusPastsByTeamIdIn(List<Long> teamIds);
 }
