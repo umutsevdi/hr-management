@@ -34,3 +34,4 @@ build/
 ### VS Code ###
 .vscode/
 frontend/generated/
+src/main/resources/application.properties
