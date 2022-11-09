@@ -1,19 +1,26 @@
 package com.hr.management.api.repository.entity;
 
+import com.hr.management.api.service.model.EmployeeStatusPastDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Table
 @Entity(name = "e_status_past")
-public class EmployeeStatusPast extends BaseEntity {
+public class EmployeeStatusPast {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false)
+    private Long id;
+    // Generic information
+    @Column(name = "CREATED")
+    private LocalDateTime createdDate;
     @Column(name = "e_id", nullable = false, unique = true)
     private Long employeeId;
     @Column(name = "t_id", nullable = false)
@@ -41,4 +48,23 @@ public class EmployeeStatusPast extends BaseEntity {
     @Column(name = "work_days_overtime")
     private Integer workDaysOvertime;
 
+    public EmployeeStatusPast(EmployeeStatusPastDto employeeStatus) {
+        this(
+                null,
+                null,
+                employeeStatus.getEmployeeId(),
+                employeeStatus.getTeamId(),
+                employeeStatus.getWorkingHour(),
+                employeeStatus.getCompletedSprints(),
+                employeeStatus.getAwaitingTasks(),
+                employeeStatus.getCompletedTasks(),
+                employeeStatus.getDelayedTasks(),
+                employeeStatus.getUnfinishedTasks(),
+                employeeStatus.getAverageTeamScore(),
+                employeeStatus.getMonthlySalary(),
+                employeeStatus.getYear(),
+                employeeStatus.getWorkDaysLate(),
+                employeeStatus.getWorkDaysOvertime()
+        );
+    }
 }

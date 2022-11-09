@@ -11,7 +11,7 @@ import java.io.Serializable;
  */
 @Getter
 @Setter
-public class EmployeeStatusPastDto extends EmployeeStatusDto implements Serializable {
+public class EmployeeStatusPastDto extends BaseEmployeeStatus implements Serializable {
     private Integer year;
     private Integer workDaysLate;
     private Integer workDaysOvertime;

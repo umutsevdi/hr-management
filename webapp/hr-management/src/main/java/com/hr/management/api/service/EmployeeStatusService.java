@@ -20,6 +20,10 @@ public class EmployeeStatusService {
     private EmployeeStatusRepository employeeStatusRepository;
     private EmployeeStatusPastRepository employeeStatusPastRepository;
 
+    public List<EmployeeStatusDto> findAll() {
+        return employeeStatusRepository.findAll().stream().map(EmployeeStatusDto::new).collect(Collectors.toList());
+    }
+
     public EmployeeStatusDto findEmployeeStatusesByEmployeeId(Long id) {
         EmployeeStatus employeeStatus = employeeStatusRepository.findEmployeeStatusByEmployeeId(id);
         if (employeeStatus != null) {

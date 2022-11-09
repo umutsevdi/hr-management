@@ -23,6 +23,10 @@ public class TeamService {
     private EmployeeStatusRepository employeeStatusRepository;
     private TeamRepository teamRepository;
 
+    public List<TeamDto> findAll() {
+        return teamRepository.findAll().stream().map(TeamDto::new).collect(Collectors.toList());
+    }
+
     TeamDto findById(Long id) {
         Optional<Team> team = teamRepository.findById(id);
         if (team.isPresent()) {
@@ -48,7 +52,8 @@ public class TeamService {
     }
 
     List<TeamDto> findByRemote(Boolean isRemote) {
-        List<Team> teamList = teamRepository.findTeamsByRemote(isRemote);
+        List<Team> teamList = teamRepository.findAll();
+        teamList.removeIf(i -> i.isRemote() != isRemote);
 
         if (CollectionUtils.isEmpty(teamList)) {
             return Collections.emptyList();

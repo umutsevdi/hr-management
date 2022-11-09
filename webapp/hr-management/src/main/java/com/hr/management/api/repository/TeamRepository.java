@@ -11,8 +11,6 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
 
     Team findTeamByName(String name);
 
-    List<Team> findTeamsByRemote(Boolean isRemote);
-
     Team findTeamByBossId(Long id);
 
 }

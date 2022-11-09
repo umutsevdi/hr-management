@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class EmployeeDto implements Serializable {
     private Long id;
     private LocalDateTime createdDate;

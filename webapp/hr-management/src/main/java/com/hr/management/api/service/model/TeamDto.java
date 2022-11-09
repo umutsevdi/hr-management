@@ -3,7 +3,6 @@ package com.hr.management.api.service.model;
 import com.hr.management.api.repository.entity.Team;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
@@ -14,7 +13,6 @@ import java.time.LocalDateTime;
  */
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @Accessors(chain = true)
 public class TeamDto implements Serializable {
     private Long id;

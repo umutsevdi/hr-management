@@ -1,8 +1,7 @@
-drop table e_t;
-drop table team;
-drop table employee;
-drop table e_status;
-drop table e_status_past;
+-- drop table team;
+-- drop table employee;
+-- drop table e_status;
+-- drop table e_status_past;
 create table employee
 (
     id         SERIAL PRIMARY KEY NOT NULL,
@@ -22,7 +21,7 @@ create table team
 (
     id         SERIAL PRIMARY KEY NOT NULL,
     name       VARCHAR(50),
-    boss_id    VARCHAR(50),
+    boss_id    INT,
     profile    VARCHAR(150),
     is_remote  boolean,
     created    DATE,
