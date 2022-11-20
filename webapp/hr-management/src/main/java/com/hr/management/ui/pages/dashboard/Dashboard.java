@@ -1,35 +1,38 @@
 package com.hr.management.ui.pages.dashboard;
 
 
-import com.hr.management.ui.client.EmployeeClient;
+import com.hr.management.api.service.model.TeamDto;
+import com.hr.management.ui.client.PageClient;
 import com.hr.management.ui.client.view.EmployeeView;
 import com.hr.management.ui.components.EmployeeForm;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
-import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.Route;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
-@Route(value = "")
-@PageTitle("Contacts | Vaadin CRM")
-public class ListView extends VerticalLayout {
-    EmployeeClient employeeClient;
+public class Dashboard extends VerticalLayout {
+    App app;
+    PageClient client;
     Grid<EmployeeView> grid = new Grid<>(EmployeeView.class);
     TextField filterText = new TextField();
     EmployeeForm form;
 
-    public ListView(EmployeeClient employeeClient) {
-        this.employeeClient = employeeClient;
+    Paragraph affectedFields = new Paragraph();
+
+    public Dashboard(App app, List<TeamDto> teams) {
+        this.app = app;
+        this.client = app.getClient();
         addClassName("list-view");
         setSizeFull();
         configureGrid();
-        configureForm();
+        configureForm(teams);
         add(getToolbar(), getContent());
         updateList();
         closeEditor();
@@ -44,32 +47,33 @@ public class ListView extends VerticalLayout {
         return content;
     }
 
-    private void configureForm() {
-        form = new EmployeeForm(employeeClient.getTeamService().findAll());
+    private void configureForm(List<TeamDto> teams) {
+        form = new EmployeeForm(teams);
         form.setWidth("25em");
     }
 
     private void configureGrid() {
         grid.addClassNames("contact-grid");
         grid.setSizeFull();
-        grid.setColumns("id", "firstName", "lastName", "email", "teamName", "title");
+        grid.setColumns();
+        grid.addColumn(new ComponentRenderer<>(
+                i -> new Anchor("/employee/" + i.getId(), i.getId().toString()))).setHeader("Id");
+        grid.addColumns("firstName", "lastName", "email", "teamName", "title");
         grid.getColumns().forEach(col -> col.setAutoWidth(true));
-
-        grid.asSingleSelect().addValueChangeListener(event ->
-                editContact(event.getValue()));
+        grid.asSingleSelect().addValueChangeListener(event -> editContact(event.getValue()));
     }
 
     private HorizontalLayout getToolbar() {
-        filterText.setPlaceholder("Filter by name...");
+        filterText.setPlaceholder("Search...");
         filterText.setClearButtonVisible(true);
         filterText.setValueChangeMode(ValueChangeMode.LAZY);
         filterText.addValueChangeListener(e -> updateList(e.getValue()));
 
-        Button addContactButton = new Button("Add contact");
+        Button addContactButton = new Button("New Employee");
         addContactButton.addClickListener(click -> addContact());
 
 
-        HorizontalLayout toolbar = new HorizontalLayout(filterText, addContactButton);
+        HorizontalLayout toolbar = new HorizontalLayout(filterText, addContactButton, affectedFields);
         toolbar.addClassName("toolbar");
         return toolbar;
     }
@@ -96,24 +100,17 @@ public class ListView extends VerticalLayout {
     }
 
     private void updateList() {
-        grid.setItems(employeeClient.getEmployeesForView());
+        List<EmployeeView> employeeViewList = client.toView(client.getEmployeeService().findAll());
+        affectedFields.setText(employeeViewList.size() + (employeeViewList.size() > 1 ? " employees found" : " employee found"));
+        grid.setItems(employeeViewList);
     }
 
     private void updateList(String query) {
-        grid.setItems(employeeClient.filterBy(employeeClient.getEmployeesForView(), parseQuery(query)));
+        List<EmployeeView> employeeViewList = client.
+                filterBy(client.toView(client.getEmployeeService().findAll()), query);
+        affectedFields.setText(employeeViewList.size() + (employeeViewList.size() > 1 ? " employees found" : " employee found"));
+        grid.setItems(employeeViewList);
     }
 
-    private Map<String, String> parseQuery(String query) {
-        Map<String, String> parsedQuery = new HashMap<>();
-        for (String entry : query.split(",")) {
-            String[] singleQuery = entry.split(":");
-            if (singleQuery.length == 2) {
-                singleQuery[0] = singleQuery[0].strip();
-                singleQuery[1] = singleQuery[1].strip();
-                parsedQuery.put(singleQuery[0], singleQuery[1]);
-            }
-        }
-        return parsedQuery;
-    }
 
 }

@@ -3,7 +3,9 @@ package com.hr.management.ui.components;
 import com.hr.management.api.service.model.TeamDto;
 import com.hr.management.ui.client.view.EmployeeView;
 import com.hr.management.ui.client.view.ExperienceData;
+import com.hr.management.ui.pages.dashboard.App;
 import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -11,7 +13,9 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
@@ -44,13 +48,19 @@ public class EmployeeForm extends FormLayout {
     Button delete = new Button("Delete");
     Button close = new Button("Cancel");
 
-    public EmployeeForm(List<TeamDto> teams) {
+    public EmployeeForm(List<TeamDto> teams, App app) {
         addClassName("contact-form");
         avatar = new Avatar();
+        avatar.setMinHeight(120, Unit.PIXELS);
+        avatar.setMaxHeight(120, Unit.PIXELS);
+        avatar.setMinWidth(120, Unit.PIXELS);
+        avatar.setMaxWidth(120, Unit.PIXELS);
+        VerticalLayout avatarLayout = new VerticalLayout(avatar);
+        avatarLayout.setAlignItems(FlexComponent.Alignment.CENTER);
         teamMap = teams.stream().collect(Collectors.toMap(TeamDto::getId, Function.identity()));
         teamName = new ComboBox<>("Team", teamMap.values().stream().map(TeamDto::getName).collect(Collectors.toList()));
         add(
-                avatar,
+                avatarLayout,
                 firstName,
                 lastName,
                 dateOfBirth,
@@ -63,6 +73,7 @@ public class EmployeeForm extends FormLayout {
                 teamName,
                 accordion,
                 createButtonsLayout());
+save.addClickListener(event -> app.getClient().get )
     }
 
     private HorizontalLayout createButtonsLayout() {
@@ -75,7 +86,7 @@ public class EmployeeForm extends FormLayout {
     }
 
     public void fillFieldsWith(EmployeeView employeeView) {
-        avatar = new Avatar(employeeView.getProfile());
+        avatar.setImage(employeeView.getProfile());
         firstName.setValue(employeeView.getFirstName());
         lastName.setValue(employeeView.getLastName());
 
@@ -91,7 +102,7 @@ public class EmployeeForm extends FormLayout {
     }
 
     public void resetFields() {
-        avatar = new Avatar();
+        avatar.setImage(null);
         firstName.setValue("");
         lastName.setValue("");
 

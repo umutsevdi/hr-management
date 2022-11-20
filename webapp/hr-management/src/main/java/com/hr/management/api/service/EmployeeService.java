@@ -6,6 +6,7 @@ import com.hr.management.api.repository.entity.Employee;
 import com.hr.management.api.repository.entity.EmployeeStatus;
 import com.hr.management.api.service.model.EmployeeDto;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
+@Log4j2
 public class EmployeeService {
     private EmployeeRepository employeeRepository;
     private EmployeeStatusRepository employeeStatusRepository;
@@ -24,10 +26,8 @@ public class EmployeeService {
     }
 
     public EmployeeDto findEmployeeById(Long id) throws NoSuchObjectException {
-        Employee employee = employeeRepository.findEmployeeById(id);
-        if (employee == null) {
-            throw new NoSuchObjectException(Employee.class.toString());
-        }
+        Employee employee = employeeRepository.findById(id).orElseThrow(() -> new NoSuchObjectException(Employee.class.toString()));
+        log.info("findByEmployeeId {} -> {}", id, employee);
         return new EmployeeDto(employee);
     }
 

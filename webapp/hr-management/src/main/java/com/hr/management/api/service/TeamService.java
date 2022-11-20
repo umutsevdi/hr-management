@@ -27,7 +27,7 @@ public class TeamService {
         return teamRepository.findAll().stream().map(TeamDto::new).collect(Collectors.toList());
     }
 
-    TeamDto findById(Long id) {
+    public TeamDto findById(Long id) {
         Optional<Team> team = teamRepository.findById(id);
         if (team.isPresent()) {
             return team.map(TeamDto::new).orElse(null);
@@ -35,7 +35,7 @@ public class TeamService {
         return null;
     }
 
-    TeamDto findByName(String teamName) {
+    public TeamDto findByName(String teamName) {
         Team team = teamRepository.findTeamByName(teamName);
         if (team == null) {
             return null;
@@ -43,7 +43,7 @@ public class TeamService {
         return new TeamDto(team);
     }
 
-    TeamDto findByBossId(Long bossId) {
+    public TeamDto findByBossId(Long bossId) {
         Team team = teamRepository.findTeamByBossId(bossId);
         if (team == null) {
             return null;
@@ -51,7 +51,7 @@ public class TeamService {
         return new TeamDto(team);
     }
 
-    List<TeamDto> findByRemote(Boolean isRemote) {
+    public List<TeamDto> findByRemote(Boolean isRemote) {
         List<Team> teamList = teamRepository.findAll();
         teamList.removeIf(i -> i.isRemote() != isRemote);
 
@@ -61,7 +61,7 @@ public class TeamService {
         return teamList.stream().map(TeamDto::new).collect(Collectors.toList());
     }
 
-    TeamDto getTeam(EmployeeDto employee) {
+    public TeamDto getTeam(EmployeeDto employee) {
         EmployeeStatus employeeStatus = employeeStatusRepository.findEmployeeStatusByEmployeeId(employee.getId());
         if (employeeStatus != null) {
             Optional<Team> team = teamRepository.findById(employeeStatus.getTeamId());

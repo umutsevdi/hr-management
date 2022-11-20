@@ -6,11 +6,13 @@ import com.hr.management.api.service.model.EmployeeStatusPastDto;
 import com.hr.management.api.service.model.TeamDto;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 
 @Getter
 @Setter
+@ToString
 public class EmployeeView extends EmployeeDto {
     private TeamDto team;
     private List<EmployeeStatusPastDto> pastEmployeeStatus;

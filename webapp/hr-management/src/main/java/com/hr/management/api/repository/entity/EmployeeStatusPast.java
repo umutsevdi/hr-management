@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,9 +17,6 @@ public class EmployeeStatusPast {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     private Long id;
-    // Generic information
-    @Column(name = "CREATED")
-    private LocalDateTime createdDate;
     @Column(name = "e_id", nullable = false, unique = true)
     private Long employeeId;
     @Column(name = "t_id", nullable = false)
@@ -50,7 +46,6 @@ public class EmployeeStatusPast {
 
     public EmployeeStatusPast(EmployeeStatusPastDto employeeStatus) {
         this(
-                null,
                 null,
                 employeeStatus.getEmployeeId(),
                 employeeStatus.getTeamId(),

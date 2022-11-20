@@ -8,7 +8,7 @@ import java.util.List;
 
 @Repository
 public interface EmployeeStatusPastRepository extends JpaRepository<EmployeeStatusPast, Long> {
-    List<EmployeeStatusPast> findEmployeeStatusPastsByEmployeeId(Long id);
+    List<EmployeeStatusPast> findEmployeeStatusPastsByEmployeeId(Long employeeId);
 
     List<EmployeeStatusPast> findEmployeeStatusPastByTeamId(Long teamId);
 
@@ -17,8 +17,6 @@ public interface EmployeeStatusPastRepository extends JpaRepository<EmployeeStat
     List<EmployeeStatusPast> findEmployeeStatusPastByEmployeeIdAndYear(Long id, int year);
 
     List<EmployeeStatusPast> findEmployeeStatusPastByTeamIdAndYear(Long teamId, int year);
-
-    List<EmployeeStatusPast> findEmployeeStatusPastsByEmployeeIdIn(List<Long> ids);
 
     List<EmployeeStatusPast> findEmployeeStatusPastsByTeamIdIn(List<Long> teamIds);
 }

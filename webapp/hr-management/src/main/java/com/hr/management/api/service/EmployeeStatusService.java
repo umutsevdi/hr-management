@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -106,11 +107,16 @@ public class EmployeeStatusService {
     }
 
     public List<EmployeeStatusPastDto> findEmployeeStatusPastsByEmployeeIdIn(List<Long> employeeIdList) {
-        List<EmployeeStatusPast> employeeStatusList = employeeStatusPastRepository.findEmployeeStatusPastsByEmployeeIdIn(employeeIdList);
-        if (!CollectionUtils.isEmpty(employeeStatusList)) {
-            return employeeStatusList.stream().map(EmployeeStatusPastDto::new).collect(Collectors.toList());
+        List<EmployeeStatusPastDto> employeeStatusPastList = new LinkedList<>();
+        for (Long id : employeeIdList) {
+            List<EmployeeStatusPast> employeeStatus = employeeStatusPastRepository.findEmployeeStatusPastsByEmployeeId(id);
+            if (!CollectionUtils.isEmpty(employeeStatus)) {
+                employeeStatusPastList.addAll(employeeStatus.stream()
+                        .map(EmployeeStatusPastDto::new)
+                        .collect(Collectors.toList()));
+            }
         }
-        return Collections.emptyList();
+        return employeeStatusPastList;
     }
 
     public List<EmployeeStatusPastDto> findEmployeeStatusPastsByTeamIdIn(List<Long> teamIdList) {
