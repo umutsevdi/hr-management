@@ -69,4 +69,22 @@ public class TeamService {
         }
         return null;
     }
+
+    public boolean create(TeamDto teamDto) {
+        Team team = new Team(teamDto);
+        if (team.getId() == null || !teamRepository.existsById(team.getId())) {
+            team = teamRepository.save(team);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean update(TeamDto teamDto) {
+        Team team = new Team(teamDto);
+        if (teamRepository.existsById(team.getId())) {
+            Team updatedTeam = teamRepository.save(team);
+            return true;
+        }
+        return false;
+    }
 }

@@ -40,7 +40,7 @@ public class Employee {
     @Column(nullable = false)
     private String education;
     @Column(name = "XP", nullable = false)
-    private Integer experience;
+    private Double experience;
     @Column(nullable = false)
     private String cv;
     @Column

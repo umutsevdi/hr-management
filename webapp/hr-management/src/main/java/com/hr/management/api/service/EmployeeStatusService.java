@@ -1,5 +1,6 @@
 package com.hr.management.api.service;
 
+import com.hr.management.api.repository.EmployeeRepository;
 import com.hr.management.api.repository.EmployeeStatusPastRepository;
 import com.hr.management.api.repository.EmployeeStatusRepository;
 import com.hr.management.api.repository.entity.EmployeeStatus;
@@ -10,6 +11,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 public class EmployeeStatusService {
     private EmployeeStatusRepository employeeStatusRepository;
     private EmployeeStatusPastRepository employeeStatusPastRepository;
+    private final EmployeeRepository employeeRepository;
 
     public List<EmployeeStatusDto> findAll() {
         return employeeStatusRepository.findAll().stream().map(EmployeeStatusDto::new).collect(Collectors.toList());
@@ -125,5 +128,64 @@ public class EmployeeStatusService {
             return employeeStatusList.stream().map(EmployeeStatusPastDto::new).collect(Collectors.toList());
         }
         return Collections.emptyList();
+    }
+
+    public boolean create(EmployeeStatusDto employeeStatusDto) {
+        EmployeeStatus employeeStatus = new EmployeeStatus(employeeStatusDto);
+        if (employeeStatus.getId() == null || !employeeStatusRepository.existsById(employeeStatus.getId())) {
+            employeeStatusRepository.save(employeeStatus);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean update(EmployeeStatusDto employeeStatusDto) {
+        EmployeeStatus employeeStatus = new EmployeeStatus(employeeStatusDto);
+        if (employeeStatusRepository.existsById(employeeStatus.getId())) {
+            employeeStatusRepository.save(employeeStatus);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean create(EmployeeStatusPastDto employeeStatusDto) {
+        EmployeeStatusPast employeeStatus = new EmployeeStatusPast(employeeStatusDto);
+        if (employeeStatus.getId() == null || !employeeStatusPastRepository.existsById(employeeStatus.getId())) {
+            employeeStatusPastRepository.save(employeeStatus);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean update(EmployeeStatusPastDto employeeStatusDto) {
+        EmployeeStatusPast employeeStatus = new EmployeeStatusPast(employeeStatusDto);
+        if (employeeStatusPastRepository.existsById(employeeStatus.getId())) {
+            employeeStatusPastRepository.save(employeeStatus);
+            return true;
+        }
+        return false;
+    }
+
+    public EmployeeStatusPastDto saveToPast(EmployeeStatus employeeStatus, int workDaysLate, int workDaysOvertime) {
+        if (employeeStatusRepository.existsById(employeeStatus.getId())) {
+            EmployeeStatusPast employeeStatusPast = new EmployeeStatusPast(
+                    null,
+                    employeeStatus.getEmployeeId(),
+                    employeeStatus.getTeamId(),
+                    employeeStatus.getWorkingHour(),
+                    employeeStatus.getCompletedSprints(),
+                    employeeStatus.getAwaitingTasks(),
+                    employeeStatus.getCompletedTasks(),
+                    employeeStatus.getDelayedTasks(),
+                    employeeStatus.getUnfinishedTasks(),
+                    employeeStatus.getAverageTeamScore(), employeeStatus.getMonthlySalary(),
+                    LocalDate.now().getYear(),
+                    workDaysLate, workDaysOvertime
+            );
+            employeeStatusPast = employeeStatusPastRepository.save(employeeStatusPast);
+            employeeStatusRepository.deleteById(employeeStatus.getId());
+            return new EmployeeStatusPastDto(employeeStatusPast);
+        }
+        return null;
     }
 }

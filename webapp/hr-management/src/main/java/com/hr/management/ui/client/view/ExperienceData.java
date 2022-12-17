@@ -1,27 +1,34 @@
 package com.hr.management.ui.client.view;
 
-import com.vaadin.flow.component.avatar.Avatar;
-import com.vaadin.flow.component.html.H3;
-import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.NumberField;
+import com.vaadin.flow.component.textfield.TextField;
 
 public class ExperienceData extends VerticalLayout {
     public ExperienceData(EmployeeView employeeView) {
-        Avatar avatar = new Avatar(employeeView.getTeam().getProfile());
-        H3 teamName = new H3(employeeView.getTeam().getName());
-        Paragraph title = new Paragraph(employeeView.getEmployeeStatus().getTitle());
-        Paragraph workingHour = new Paragraph("Working Hours:" + employeeView.getEmployeeStatus().getWorkingHour());
-        Paragraph completedSprints = new Paragraph("Completed Sprints:" + employeeView.getEmployeeStatus().getCompletedSprints());
-        Paragraph awaitingTasks = new Paragraph("Awaiting Tasks:" + employeeView.getEmployeeStatus().getAwaitingTasks());
-        Paragraph completedTasks = new Paragraph("Completed Tasks:" + employeeView.getEmployeeStatus().getCompletedTasks());
-        Paragraph delayedTasks = new Paragraph("Delayed Tasks:" + employeeView.getEmployeeStatus().getDelayedTasks());
-        Paragraph unfinishedTasks = new Paragraph("Unfinished Tasks:" + employeeView.getEmployeeStatus().getUnfinishedTasks());
-        Paragraph averageTeamScore = new Paragraph("Team Score" + employeeView.getEmployeeStatus().getAverageTeamScore());
-        Paragraph monthlySalary = new Paragraph("Monthly Salary" + employeeView.getEmployeeStatus().getMonthlySalary());
+        addClassName("contact-form");
+        TextField title = new TextField("Title");
+        NumberField workingHour = new NumberField("Working Hour");
+        NumberField completedSprints = new NumberField("Completed Sprints");
+        NumberField awaitingTasks = new NumberField("Awaiting Tasks");
+        NumberField completedTasks = new NumberField("Completed Tasks");
+        NumberField delayedTasks = new NumberField("Delayed Tasks");
+        NumberField unfinishedTasks = new NumberField("Unfinished Tasks");
+        NumberField averageTeamScore = new NumberField("Team Score");
+        NumberField monthlySalary = new NumberField("Monthly Salary");
 
-        add(
-                new HorizontalLayout(avatar, teamName, title), workingHour, completedSprints, awaitingTasks, completedTasks, delayedTasks, unfinishedTasks, averageTeamScore, monthlySalary
-        );
+        title.setValue(employeeView.getEmployeeStatus().getTitle());
+        workingHour.setValue(Double.valueOf(employeeView.getEmployeeStatus().getWorkingHour()));
+        completedSprints.setValue(Double.valueOf(employeeView.getEmployeeStatus().getCompletedSprints()));
+        awaitingTasks.setValue(Double.valueOf(employeeView.getEmployeeStatus().getAwaitingTasks()));
+        completedTasks.setValue(Double.valueOf(employeeView.getEmployeeStatus().getCompletedTasks()));
+        delayedTasks.setValue(Double.valueOf(employeeView.getEmployeeStatus().getDelayedTasks()));
+        unfinishedTasks.setValue(Double.valueOf(employeeView.getEmployeeStatus().getUnfinishedTasks()));
+        averageTeamScore.setValue(Double.valueOf(employeeView.getEmployeeStatus().getAverageTeamScore()));
+        monthlySalary.setValue(employeeView.getEmployeeStatus().getMonthlySalary());
+
+        VerticalLayout verticalLayout = new VerticalLayout(title, workingHour, completedSprints, awaitingTasks, completedTasks, delayedTasks, unfinishedTasks, averageTeamScore, monthlySalary);
+        verticalLayout.setSizeFull();
+        add(verticalLayout);
     }
 }

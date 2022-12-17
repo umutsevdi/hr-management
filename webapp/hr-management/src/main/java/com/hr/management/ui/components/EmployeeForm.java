@@ -1,9 +1,9 @@
 package com.hr.management.ui.components;
 
+import com.hr.management.api.service.model.EmployeeDto;
 import com.hr.management.api.service.model.TeamDto;
 import com.hr.management.ui.client.view.EmployeeView;
 import com.hr.management.ui.client.view.ExperienceData;
-import com.hr.management.ui.pages.dashboard.App;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.avatar.Avatar;
@@ -28,7 +28,9 @@ import java.util.stream.Collectors;
 
 public class EmployeeForm extends FormLayout {
     private final Map<Long, TeamDto> teamMap;
+    private EmployeeView employeeView;
     Avatar avatar;
+    Avatar teamAvatar = new Avatar();
 
     Details accordion = new Details("Details");
     TextField firstName = new TextField("First Name");
@@ -46,10 +48,10 @@ public class EmployeeForm extends FormLayout {
 
     Button save = new Button("Save");
     Button delete = new Button("Delete");
-    Button close = new Button("Cancel");
 
-    public EmployeeForm(List<TeamDto> teams, App app) {
+    public EmployeeForm(List<TeamDto> teams) {
         addClassName("contact-form");
+        setWidth("25em");
         avatar = new Avatar();
         avatar.setMinHeight(120, Unit.PIXELS);
         avatar.setMaxHeight(120, Unit.PIXELS);
@@ -59,8 +61,25 @@ public class EmployeeForm extends FormLayout {
         avatarLayout.setAlignItems(FlexComponent.Alignment.CENTER);
         teamMap = teams.stream().collect(Collectors.toMap(TeamDto::getId, Function.identity()));
         teamName = new ComboBox<>("Team", teamMap.values().stream().map(TeamDto::getName).collect(Collectors.toList()));
-        add(
-                avatarLayout,
+
+        teamName.addValueChangeListener(
+                i -> {
+                    if (employeeView != null) {
+                        TeamDto team = null;
+                        for (TeamDto t : teams) {
+                            if (t.getName().equals(teamName.getValue())) {
+                                team = t;
+                                break;
+                            }
+                        }
+                        assert team != null;
+                        teamAvatar.setImage(team.getProfile());
+                        teamAvatar.setName(team.getName());
+                    }
+                }
+        );
+        accordion.setWidthFull();
+        add(avatarLayout,
                 firstName,
                 lastName,
                 dateOfBirth,
@@ -70,38 +89,36 @@ public class EmployeeForm extends FormLayout {
                 education,
                 experience,
                 cv,
-                teamName,
+                new HorizontalLayout(teamAvatar, teamName),
                 accordion,
                 createButtonsLayout());
-save.addClickListener(event -> app.getClient().get )
     }
 
     private HorizontalLayout createButtonsLayout() {
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        close.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         save.addClickShortcut(Key.ENTER);
-        close.addClickShortcut(Key.ESCAPE);
-        return new HorizontalLayout(save, delete, close);
+        return new HorizontalLayout(save, delete);
     }
 
     public void fillFieldsWith(EmployeeView employeeView) {
+        this.employeeView = employeeView;
         avatar.setImage(employeeView.getProfile());
         firstName.setValue(employeeView.getFirstName());
         lastName.setValue(employeeView.getLastName());
-
         dateOfBirth.setValue(employeeView.getDateOfBirth());
         gender.setValue(employeeView.getGender().toString());
         email.setValue(employeeView.getEmail());
         phoneNumber.setValue(employeeView.getPhoneNumber());
         education.setValue(employeeView.getEducation());
-        experience.setValue(Double.valueOf(employeeView.getExperience()));
+        experience.setValue(employeeView.getExperience());
         cv.setValue(employeeView.getCv());
         teamName.setValue(teamMap.get(employeeView.getEmployeeStatus().getTeamId()).getName());
         accordion.addContent(new ExperienceData(employeeView));
     }
 
     public void resetFields() {
+        this.employeeView = null;
         avatar.setImage(null);
         firstName.setValue("");
         lastName.setValue("");
@@ -114,6 +131,30 @@ save.addClickListener(event -> app.getClient().get )
         experience.setValue(0d);
         cv.setValue("");
         accordion.setContent(null);
+    }
+
+    public EmployeeView readFields() {
+        if (employeeView == null) {
+            return null;
+        }
+
+        EmployeeDto employeeDto = new EmployeeDto(
+                employeeView.getId(),
+                employeeView.getCreatedDate(),
+                firstName.getValue(),
+                lastName.getValue(),
+                dateOfBirth.getValue(),
+                gender.getValue().charAt(0),
+                email.getValue(),
+                phoneNumber.getValue(),
+                education.getValue(),
+                experience.getValue(),
+                cv.getValue(),
+                employeeView.getProfile()
+
+        );
+
+        return null;
     }
 }
 

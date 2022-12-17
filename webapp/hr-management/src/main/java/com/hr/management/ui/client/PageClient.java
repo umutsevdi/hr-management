@@ -8,9 +8,11 @@ import com.hr.management.api.service.model.EmployeeStatusDto;
 import com.hr.management.api.service.model.EmployeeStatusPastDto;
 import com.hr.management.api.service.model.TeamDto;
 import com.hr.management.ui.client.view.EmployeeView;
+import com.hr.management.ui.client.view.TeamView;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.function.Function;
@@ -64,67 +66,87 @@ public class PageClient {
         return new EmployeeView(e, team, employeeStatusPast, employeeStatus);
     }
 
-    public List<EmployeeView> filterBy(List<EmployeeView> employeeViewList, String query) {
+
+    public TeamView toView(TeamDto e) {
+        if (e == null) {
+            return null;
+        }
+        EmployeeDto boss;
+        try {
+            boss = employeeService.findEmployeeById(e.getBossId());
+        } catch (Exception exception) {
+            boss = null;
+            exception.printStackTrace();
+        }
+        List<EmployeeDto> employeeDtoList = employeeService.findByTeamId(e.getId());
+        return new TeamView(e, boss, employeeDtoList);
+    }
+
+    public List<TeamView> toView(List<TeamDto> e) {
+        if (CollectionUtils.isEmpty(e)) {
+            return Collections.emptyList();
+        }
+        return e.stream().map(this::toView).collect(Collectors.toList());
+    }
+
+    public List<EmployeeView> filterBy(List<EmployeeView> baseList, String query) {
         Map<String, String> filter = parseQuery(query);
         if (filter.size() == 0) {
-            return employeeViewList;
+            return baseList;
         }
-        List<EmployeeView> baseList = new ArrayList<>(employeeViewList);
+        List<EmployeeView> finalList = new ArrayList<>(baseList);
         for (Map.Entry<String, String> entry : filter.entrySet()) {
             switch (entry.getKey()) {
-                case "id": {
-                    baseList.removeIf(i -> !i.getId().toString().equals(entry.getValue()));
+                case "id":
+                    finalList.removeIf(i -> !i.getId().toString().equals(entry.getValue()));
                     break;
-                }
-                case "firstName": {
-                    baseList.removeIf(i -> !i.getFirstName().contains(entry.getValue()));
+                case "firstName":
+                    finalList.removeIf(i -> !i.getFirstName().toLowerCase().contains(entry.getValue()));
                     break;
-                }
-                case "lastName": {
-                    baseList.removeIf(i -> !i.getLastName().contains(entry.getValue()));
+                case "lastName":
+                    finalList.removeIf(i -> !i.getLastName().toLowerCase().contains(entry.getValue()));
                     break;
-                }
-                case "email": {
-                    baseList.removeIf(i -> !i.getEmail().contains(entry.getValue()));
+                case "email":
+                    finalList.removeIf(i -> !i.getEmail().toLowerCase().contains(entry.getValue()));
                     break;
-                }
-                case "phone": {
-                    baseList.removeIf(i -> !i.getPhoneNumber().contains(entry.getValue()));
+                case "phone":
+                    finalList.removeIf(i -> !i.getPhoneNumber().contains(entry.getValue()));
                     break;
-                }
-                case "education": {
-                    baseList.removeIf(i -> !i.getEducation().contains(entry.getValue()));
+                case "education":
+                    finalList.removeIf(i -> !i.getEducation().toLowerCase().contains(entry.getValue()));
                     break;
-                }
-                case "experience": {
-                    baseList.removeIf(i -> !i.getExperience().toString().equals(entry.getValue()));
+                case "experience":
+                    finalList.removeIf(i -> !i.getExperience().toString().equals(entry.getValue()));
                     break;
-                }
-                case "team": {
-                    baseList.removeIf(i -> !i.getTeam().getName().contains(entry.getValue()));
+                case "team":
+                    finalList.removeIf(i -> !i.getTeam().getName().toLowerCase().contains(entry.getValue()));
                     break;
-                }
-                case "title": {
-                    baseList.removeIf(i -> !i.getTitle().contains(entry.getValue()));
+                case "title":
+                    finalList.removeIf(i -> !i.getTitle().toLowerCase().contains(entry.getValue()));
                     break;
-                }
             }
 
         }
-        return baseList;
+        return finalList;
     }
 
     private Map<String, String> parseQuery(String query) {
-        Map<String, String> parsedQuery = new HashMap<>();
-        for (String entry : query.split(",")) {
-            String[] singleQuery = entry.split(":");
-            if (singleQuery.length == 2) {
-                singleQuery[0] = singleQuery[0].strip();
-                singleQuery[1] = singleQuery[1].strip();
-                parsedQuery.put(singleQuery[0], singleQuery[1]);
+        String[] entries = query.split(",");
+        Map<String, String> parsedQuery = new HashMap<>(entries.length);
+        for (String entry : entries) {
+            String[] statement = entry.split("=");
+            if (statement.length == 2) {
+                statement[0] = statement[0].strip();
+                statement[1] = statement[1].strip().toLowerCase();
+                parsedQuery.put(statement[0], statement[1]);
             }
         }
         return parsedQuery;
+    }
+
+    public void save(EmployeeView employeeView) {
+
+
     }
 
 }
