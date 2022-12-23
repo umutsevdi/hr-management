@@ -1,6 +1,7 @@
 package com.hr.management.ui.components;
 
 import com.hr.management.api.service.model.EmployeeDto;
+import com.hr.management.api.service.model.EmployeeStatusDto;
 import com.hr.management.api.service.model.TeamDto;
 import com.hr.management.ui.client.view.EmployeeView;
 import com.hr.management.ui.client.view.ExperienceData;
@@ -11,7 +12,6 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
-import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -32,7 +32,7 @@ public class EmployeeForm extends FormLayout {
     Avatar avatar;
     Avatar teamAvatar = new Avatar();
 
-    Details accordion = new Details("Details");
+    VerticalLayout detailsBlock = new VerticalLayout();
     TextField firstName = new TextField("First Name");
     TextField lastName = new TextField("Last Name");
 
@@ -49,9 +49,14 @@ public class EmployeeForm extends FormLayout {
     Button save = new Button("Save");
     Button delete = new Button("Delete");
 
-    public EmployeeForm(List<TeamDto> teams) {
+    public EmployeeForm(List<TeamDto> teams, Boolean isVertical) {
         addClassName("contact-form");
-        setWidth("25em");
+        if (isVertical) {
+            setWidth("25em");
+        } else {
+            setWidthFull();
+        }
+        setHeightFull();
         avatar = new Avatar();
         avatar.setMinHeight(120, Unit.PIXELS);
         avatar.setMaxHeight(120, Unit.PIXELS);
@@ -78,20 +83,50 @@ public class EmployeeForm extends FormLayout {
                     }
                 }
         );
-        accordion.setWidthFull();
-        add(avatarLayout,
-                firstName,
-                lastName,
-                dateOfBirth,
-                gender,
-                email,
-                phoneNumber,
-                education,
-                experience,
-                cv,
-                new HorizontalLayout(teamAvatar, teamName),
-                accordion,
-                createButtonsLayout());
+        if (isVertical) {
+            add(new VerticalLayout(avatarLayout,
+                    firstName,
+                    lastName,
+                    dateOfBirth,
+                    gender,
+                    email,
+                    phoneNumber,
+                    education,
+                    experience,
+                    cv,
+                    new HorizontalLayout(teamAvatar, teamName),
+                    createButtonsLayout()));
+        } else {
+            detailsBlock.setSizeFull();
+            VerticalLayout verticalLayout = new VerticalLayout();
+            verticalLayout.setSizeFull();
+            verticalLayout.add(
+                    new HorizontalLayout(
+                            new VerticalLayout(
+                                    avatarLayout,
+                                    firstName,
+                                    lastName,
+                                    dateOfBirth,
+                                    gender,
+                                    email,
+                                    phoneNumber,
+                                    education,
+                                    experience,
+                                    cv
+                            ),
+                            new VerticalLayout(
+                                    new HorizontalLayout(teamAvatar, teamName),
+                                    detailsBlock
+                            )),
+                    createButtonsLayout()
+            );
+
+            add(verticalLayout);
+        }
+    }
+
+    public EmployeeForm(List<TeamDto> teams) {
+        this(teams, true);
     }
 
     private HorizontalLayout createButtonsLayout() {
@@ -114,7 +149,7 @@ public class EmployeeForm extends FormLayout {
         experience.setValue(employeeView.getExperience());
         cv.setValue(employeeView.getCv());
         teamName.setValue(teamMap.get(employeeView.getEmployeeStatus().getTeamId()).getName());
-        accordion.addContent(new ExperienceData(employeeView));
+        detailsBlock.add(new ExperienceData(employeeView));
     }
 
     public void resetFields() {
@@ -130,14 +165,13 @@ public class EmployeeForm extends FormLayout {
         education.setValue("");
         experience.setValue(0d);
         cv.setValue("");
-        accordion.setContent(null);
+        detailsBlock.removeAll();
     }
 
     public EmployeeView readFields() {
         if (employeeView == null) {
             return null;
         }
-
         EmployeeDto employeeDto = new EmployeeDto(
                 employeeView.getId(),
                 employeeView.getCreatedDate(),
@@ -153,8 +187,12 @@ public class EmployeeForm extends FormLayout {
                 employeeView.getProfile()
 
         );
-
-        return null;
+        TeamDto teamDto = teamMap.values().stream()
+                .filter(i -> i.getName().equals(teamName.getValue()))
+                .findFirst().orElse(null);
+        EmployeeStatusDto employeeStatusDto =
+                ((ExperienceData) detailsBlock.getComponentAt(0)).toStatus();
+        return new EmployeeView(employeeDto, teamDto, employeeView.getPastEmployeeStatus(), employeeStatusDto);
     }
 }
 

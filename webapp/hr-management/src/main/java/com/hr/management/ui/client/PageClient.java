@@ -9,7 +9,6 @@ import com.hr.management.api.service.model.EmployeeStatusPastDto;
 import com.hr.management.api.service.model.TeamDto;
 import com.hr.management.ui.client.view.EmployeeView;
 import com.hr.management.ui.client.view.TeamView;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -19,16 +18,25 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
 @Getter
 public class PageClient {
+    private final EmployeeService employeeService;
+    private final EmployeeStatusService employeeStatusService;
+    private final TeamService teamService;
 
-    private EmployeeService employeeService;
-    private EmployeeStatusService employeeStatusService;
-    private TeamService teamService;
+    public PageClient(EmployeeService employeeService, EmployeeStatusService employeeStatusService,
+                      TeamService teamService) {
+        this.employeeService = employeeService;
+        this.employeeStatusService = employeeStatusService;
+        this.teamService = teamService;
+    }
+
+    public List<TeamDto> getTeams() {
+        return teamService.findAll();
+    }
 
     public List<EmployeeView> toView(Collection<EmployeeDto> e) {
-        Map<Long, TeamDto> teamMap = teamService.findAll().stream().collect(Collectors.toMap(TeamDto::getId, Function.identity()));
+        Map<Long, TeamDto> teamMap = getTeams().stream().collect(Collectors.toMap(TeamDto::getId, Function.identity()));
 
         Map<Long, EmployeeStatusDto> employeeStatusMap = new HashMap<>(e.size());
         employeeStatusService.findAll().forEach(i -> employeeStatusMap.putIfAbsent(i.getEmployeeId(), i));

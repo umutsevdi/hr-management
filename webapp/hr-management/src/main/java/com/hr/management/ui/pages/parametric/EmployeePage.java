@@ -3,9 +3,9 @@ package com.hr.management.ui.pages.parametric;
 import com.hr.management.api.service.model.EmployeeDto;
 import com.hr.management.ui.client.PageClient;
 import com.hr.management.ui.client.view.EmployeeView;
+import com.hr.management.ui.components.EmployeeForm;
 import com.hr.management.ui.pages.BaseLayout;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.router.*;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
@@ -49,8 +49,9 @@ public class EmployeePage extends BaseLayout implements HasUrlParameter<Long> {
         if (employee == null) {
             UI.getCurrent().navigate("/employees");
         }
-        H1 title = new H1(employee.getFirstName() + " " + employee.getLastName());
-        add(title);
+        EmployeeForm employeeForm = new EmployeeForm(getClient().getTeams(), false);
+        employeeForm.fillFieldsWith(employee);
+        add(employeeForm);
     }
 
 }

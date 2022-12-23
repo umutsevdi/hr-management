@@ -31,4 +31,25 @@ public class EmployeeStatusDto extends BaseEmployeeStatus implements Serializabl
         );
         this.title = employeeStatus.getTitle();
     }
+
+    public EmployeeStatusDto(
+            Long employeeId, Long teamId, Long workingHour,
+            Integer completedSprints, Integer awaitingTasks,
+            Integer completedTasks, Integer delayedTasks,
+            Integer unfinishedTasks, Float averageTeamScore,
+            Double monthlySalary, String title) {
+        super(
+                employeeId,
+                teamId,
+                workingHour,
+                completedSprints,
+                awaitingTasks,
+                completedTasks,
+                delayedTasks,
+                unfinishedTasks,
+                averageTeamScore,
+                monthlySalary
+        );
+        this.title = title;
+    }
 }
