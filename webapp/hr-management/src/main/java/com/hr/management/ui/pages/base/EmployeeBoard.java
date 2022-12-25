@@ -19,6 +19,7 @@ import com.vaadin.flow.router.Route;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.Map;
 
 @Route(value = "")
 @PageTitle("Dashboard | Human Resources")
@@ -30,6 +31,9 @@ public class EmployeeBoard extends BaseLayout {
 
     Paragraph affectedFields = new Paragraph();
 
+    Button save;
+    Button delete;
+
     public EmployeeBoard(PageClient pageClient) {
         super(pageClient);
     }
@@ -40,7 +44,11 @@ public class EmployeeBoard extends BaseLayout {
         addClassName("list-view");
         setSizeFull();
         configureGrid();
-        form = new EmployeeForm(getClient().getTeamService().findAll());
+        form = new EmployeeForm();
+        Map.Entry<Button, Button> buttons = EmployeeForm.createButtonsLayout();
+        save = buttons.getKey();
+        delete = buttons.getValue();
+        form.add(new HorizontalLayout(save, delete));
         add(getToolbar(), getContent());
         updateList();
         closeEditor();
@@ -120,6 +128,5 @@ public class EmployeeBoard extends BaseLayout {
         affectedFields.setText(employeeViewList.size() + (employeeViewList.size() > 1 ? " employees found" : " employee found"));
         grid.setItems(employeeViewList);
     }
-
 
 }
