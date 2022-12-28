@@ -98,7 +98,7 @@ public class EmployeePage extends BaseLayout implements HasUrlParameter<Long> {
 
     public Chart createSalaryGraph() {
         Map<Integer, BaseEmployeeStatus> yearStatusMap = getEmployeeStatus();
-        String[] years = yearStatusMap.keySet().stream().map(String::valueOf).collect(Collectors.toList()).toArray(new String[yearStatusMap.size()]);
+        String[] years = yearStatusMap.keySet().stream().sorted().map(String::valueOf).collect(Collectors.toList()).toArray(new String[yearStatusMap.size()]);
 
         ListSeries workingHours = new ListSeries(
                 "Working Hours",
@@ -115,7 +115,7 @@ public class EmployeePage extends BaseLayout implements HasUrlParameter<Long> {
 
     public Chart createWorkPerformanceGraph() {
         Map<Integer, BaseEmployeeStatus> yearStatusMap = getEmployeeStatus();
-        String[] years = yearStatusMap.keySet().stream().map(String::valueOf).collect(Collectors.toList()).toArray(new String[yearStatusMap.size()]);
+        String[] years = yearStatusMap.keySet().stream().sorted().map(String::valueOf).collect(Collectors.toList()).toArray(new String[yearStatusMap.size()]);
         ListSeries completedTasks = new ListSeries(
                 "Completed Tasks",
                 yearStatusMap.values().stream().map(BaseEmployeeStatus::getCompletedTasks).toArray(Integer[]::new));

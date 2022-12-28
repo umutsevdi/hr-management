@@ -46,7 +46,7 @@ public class BaseLayout extends VerticalLayout
                 } else if (teams.equals(selectedTab)) {
                     UI.getCurrent().navigate("teams");
                 } else if (hire.equals(selectedTab)) {
-                    UI.getCurrent().navigate("hire");
+                    UI.getCurrent().navigate("employees/new");
                 }
             }
         });

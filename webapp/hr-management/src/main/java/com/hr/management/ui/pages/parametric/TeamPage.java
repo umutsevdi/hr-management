@@ -94,7 +94,7 @@ public class TeamPage extends BaseLayout implements HasUrlParameter<Long> {
 
     public Chart createCostGraph() {
         Map<Integer, List<BaseEmployeeStatus>> yearStatusMap = getEmployeeStatus();
-        String[] years = yearStatusMap.keySet().stream().map(String::valueOf).collect(Collectors.toList()).toArray(new String[yearStatusMap.size()]);
+        String[] years = yearStatusMap.keySet().stream().sorted().map(String::valueOf).collect(Collectors.toList()).toArray(new String[yearStatusMap.size()]);
 
         ListSeries employeeCount = new ListSeries(
                 "Team Members",
@@ -128,7 +128,7 @@ public class TeamPage extends BaseLayout implements HasUrlParameter<Long> {
 
     public Chart createWorkPerformanceGraph() {
         Map<Integer, List<BaseEmployeeStatus>> yearStatusMap = getEmployeeStatus();
-        String[] years = yearStatusMap.keySet().stream().map(String::valueOf).collect(Collectors.toList()).toArray(new String[yearStatusMap.size()]);
+        String[] years = yearStatusMap.keySet().stream().sorted().map(String::valueOf).collect(Collectors.toList()).toArray(new String[yearStatusMap.size()]);
 
         ListSeries completedTasks = new ListSeries(
                 "Completed Tasks",
