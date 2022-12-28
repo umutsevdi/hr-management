@@ -3,6 +3,7 @@ package com.hr.management.ui.pages.base;
 
 import com.hr.management.ui.client.PageClient;
 import com.hr.management.ui.client.view.EmployeeView;
+import com.hr.management.ui.components.CommonComponentUtil;
 import com.hr.management.ui.components.EmployeeForm;
 import com.hr.management.ui.pages.BaseLayout;
 import com.vaadin.flow.component.button.Button;
@@ -45,7 +46,7 @@ public class EmployeeBoard extends BaseLayout {
         setSizeFull();
         configureGrid();
         form = new EmployeeForm();
-        Map.Entry<Button, Button> buttons = EmployeeForm.createButtonsLayout();
+        Map.Entry<Button, Button> buttons = CommonComponentUtil.createButtonsLayout();
         save = buttons.getKey();
         delete = buttons.getValue();
         form.add(new HorizontalLayout(save, delete));

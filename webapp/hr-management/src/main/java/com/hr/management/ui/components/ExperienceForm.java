@@ -17,7 +17,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Getter
-public class ExperienceForm extends FormLayout implements FormComponent<EmployeeStatusDto> {
+public class ExperienceForm extends FormLayout implements FormComponent<EmployeeStatusDto, EmployeeView> {
     EmployeeView employeeView;
     EmployeeStatusDto employeeStatusDto;
     private final Map<Long, TeamDto> teamMap;
@@ -60,7 +60,8 @@ public class ExperienceForm extends FormLayout implements FormComponent<Employee
         );
     }
 
-    public ExperienceForm resetFields() {
+    @Override
+    public void resetFields() {
         title.clear();
         workingHour.clear();
         completedSprints.clear();
@@ -74,10 +75,10 @@ public class ExperienceForm extends FormLayout implements FormComponent<Employee
         teamAvatar.setImage(null);
         employeeStatusDto = null;
         employeeView = null;
-        return this;
     }
 
 
+    @Override
     public EmployeeStatusDto readFields() {
         if (employeeView == null) {
             return null;
@@ -107,8 +108,8 @@ public class ExperienceForm extends FormLayout implements FormComponent<Employee
                 .orElse(teamMap.values().iterator().next());
     }
 
-    public ExperienceForm fillFieldsWith(EmployeeView employeeView) {
-        this.employeeView = employeeView;
+    @Override
+    public void fillFieldsWith(EmployeeView employeeView) {
         title.setValue(employeeView.getEmployeeStatus().getTitle());
         workingHour.setValue(Double.valueOf(employeeView.getEmployeeStatus().getWorkingHour()));
         completedSprints.setValue(Double.valueOf(employeeView.getEmployeeStatus().getCompletedSprints()));
@@ -120,6 +121,5 @@ public class ExperienceForm extends FormLayout implements FormComponent<Employee
         monthlySalary.setValue(employeeView.getEmployeeStatus().getMonthlySalary());
         teamName.setValue(teamMap.get(employeeView.getEmployeeStatus().getTeamId()).getName());
         employeeStatusDto = employeeView.getEmployeeStatus();
-        return this;
     }
 }

@@ -1,12 +1,10 @@
 package com.hr.management.ui.components;
 
-import com.hr.management.ui.client.view.EmployeeView;
+public interface FormComponent<T, V> {
 
-public interface FormComponent<T> {
-
-    FormComponent<T> resetFields();
+    void resetFields();
 
     T readFields();
 
-    FormComponent<T> fillFieldsWith(EmployeeView employeeView);
+    void fillFieldsWith(V view);
 }

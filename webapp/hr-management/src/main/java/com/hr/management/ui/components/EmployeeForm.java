@@ -18,7 +18,7 @@ import com.vaadin.flow.component.textfield.TextField;
 
 import java.util.Map;
 
-public class EmployeeForm extends FormLayout implements FormComponent<EmployeeDto> {
+public class EmployeeForm extends FormLayout implements FormComponent<EmployeeDto, EmployeeView> {
     private EmployeeView employeeView;
     Avatar avatar;
     TextField firstName = new TextField("First Name");
@@ -57,15 +57,16 @@ public class EmployeeForm extends FormLayout implements FormComponent<EmployeeDt
                 phoneNumber,
                 education,
                 experience,
-                cv
-        );
+                cv);
     }
 
     public EmployeeForm() {
         this(true);
     }
 
-    public EmployeeForm fillFieldsWith(EmployeeView employeeView) {
+
+    @Override
+    public void fillFieldsWith(EmployeeView employeeView) {
         this.employeeView = employeeView;
         avatar.setImage(employeeView.getProfile());
         firstName.setValue(employeeView.getFirstName());
@@ -77,10 +78,10 @@ public class EmployeeForm extends FormLayout implements FormComponent<EmployeeDt
         education.setValue(employeeView.getEducation());
         experience.setValue(employeeView.getExperience());
         cv.setValue(employeeView.getCv());
-        return this;
     }
 
-    public EmployeeForm resetFields() {
+    @Override
+    public void resetFields() {
         this.employeeView = null;
         avatar.setImage(null);
         firstName.clear();
@@ -92,9 +93,9 @@ public class EmployeeForm extends FormLayout implements FormComponent<EmployeeDt
         education.clear();
         experience.clear();
         cv.clear();
-        return this;
     }
 
+    @Override
     public EmployeeDto readFields() {
         if (employeeView == null) {
             return null;
@@ -116,12 +117,4 @@ public class EmployeeForm extends FormLayout implements FormComponent<EmployeeDt
         );
     }
 
-    public static Map.Entry<Button, Button> createButtonsLayout() {
-        Button save = new Button("Save");
-        Button delete = new Button("Delete");
-        save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        save.addClickShortcut(Key.ENTER);
-        return Map.entry(save, delete);
-    }
 }

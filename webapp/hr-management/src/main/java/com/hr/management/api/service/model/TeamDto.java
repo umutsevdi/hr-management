@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 /**
  * A DTO for the {@link com.hr.management.api.repository.entity.Team} entity
@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 public class TeamDto implements Serializable {
     private Long id;
-    private LocalDateTime createdDate;
+    private LocalDate createdDate;
     private String name;
     private Long bossId;
     private String profile;

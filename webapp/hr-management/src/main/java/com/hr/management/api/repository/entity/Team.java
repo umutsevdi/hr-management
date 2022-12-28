@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 /*
  * The team that users work in
@@ -23,7 +23,7 @@ public class Team {
     private Long id;
     // Generic information
     @Column(name = "CREATED")
-    private LocalDateTime createdDate;
+    private LocalDate createdDate;
     @Column(nullable = false, unique = true)
     private String name;
     @Column(name = "boss_id", nullable = false)
