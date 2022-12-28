@@ -33,11 +33,14 @@ public class TeamForm extends FormLayout implements FormComponent<TeamDto, TeamV
         avatar.setMinWidth(60, Unit.PIXELS);
         avatar.setMaxWidth(60, Unit.PIXELS);
         HorizontalLayout avatarLayout = new HorizontalLayout(avatar, name);
-        add(avatarLayout,
-                ipAddress,
-                isRemote,
-                avatarUrl,
-                createdDate);
+        add(new HorizontalLayout(
+                        avatarLayout,
+                        ipAddress,
+                        isRemote,
+                        createdDate,
+                        avatarUrl
+                )
+        );
     }
 
     public TeamForm() {

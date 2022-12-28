@@ -1,5 +1,6 @@
 package com.hr.management.ui.pages.parametric;
 
+import com.hr.management.api.service.model.BaseEmployeeStatus;
 import com.hr.management.api.service.model.EmployeeDto;
 import com.hr.management.api.service.model.EmployeeStatusPastDto;
 import com.hr.management.ui.client.PageClient;
@@ -26,9 +27,9 @@ import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
 import java.rmi.NoSuchObjectException;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -96,49 +97,52 @@ public class EmployeePage extends BaseLayout implements HasUrlParameter<Long> {
     }
 
     public Chart createSalaryGraph() {
-        List<EmployeeStatusPastDto> pastStatus = employee.getPastEmployeeStatus();
-        Map<Integer, Double> yearSalaryMap = new HashMap<>(pastStatus.size());
-        pastStatus.forEach(i -> yearSalaryMap.putIfAbsent(i.getYear(), i.getMonthlySalary() * 12));
-        String[] years =
-                yearSalaryMap.keySet().stream().map(String::valueOf).collect(Collectors.toList()).toArray(new String[yearSalaryMap.size()]);
+        Map<Integer, BaseEmployeeStatus> yearStatusMap = getEmployeeStatus();
+        String[] years = yearStatusMap.keySet().stream().map(String::valueOf).collect(Collectors.toList()).toArray(new String[yearStatusMap.size()]);
+
+        ListSeries workingHours = new ListSeries(
+                "Working Hours",
+                yearStatusMap.values().stream().map(BaseEmployeeStatus::getWorkingHour).toArray(Long[]::new));
         ListSeries data = new ListSeries(
                 "Salary",
-                yearSalaryMap.values().toArray(new Double[0]));
-        Chart chart = CommonComponentUtil.setupChart(years, data);
-        chart.getConfiguration().setTitle("Salary Graph");
-        chart.getConfiguration().setSubTitle("Salary of " + employee.getFirstName() + " " + employee.getLastName() + " over years as " + employee.getTitle());
+                yearStatusMap.values().stream().map(i -> i.getMonthlySalary() * 12).toArray(Double[]::new));
+        Chart chart = CommonComponentUtil.setupChart(years, data, workingHours);
+
+        chart.getConfiguration().setTitle("Salary/Working Hours Graph");
+        chart.getConfiguration().setSubTitle("Salary and Working Hours of " + employee.getFirstName() + " " + employee.getLastName() + " over years as " + employee.getTitle());
         return chart;
     }
 
     public Chart createWorkPerformanceGraph() {
-        List<EmployeeStatusPastDto> pastStatus = employee.getPastEmployeeStatus();
-        Map<Integer, EmployeeStatusPastDto> yearStatusMap = new HashMap<>(pastStatus.size());
-        pastStatus.forEach(i -> yearStatusMap.putIfAbsent(i.getYear(), i));
+        Map<Integer, BaseEmployeeStatus> yearStatusMap = getEmployeeStatus();
         String[] years = yearStatusMap.keySet().stream().map(String::valueOf).collect(Collectors.toList()).toArray(new String[yearStatusMap.size()]);
         ListSeries completedTasks = new ListSeries(
                 "Completed Tasks",
-                yearStatusMap.values().stream().map(EmployeeStatusPastDto::getCompletedTasks).toArray(Integer[]::new));
+                yearStatusMap.values().stream().map(BaseEmployeeStatus::getCompletedTasks).toArray(Integer[]::new));
         ListSeries awaitingTasks = new ListSeries(
                 "Awaiting Tasks",
-                yearStatusMap.values().stream().map(EmployeeStatusPastDto::getAwaitingTasks).toArray(Integer[]::new));
+                yearStatusMap.values().stream().map(BaseEmployeeStatus::getAwaitingTasks).toArray(Integer[]::new));
         ListSeries unfinishedTasks = new ListSeries(
                 "Unfinished Tasks",
-                yearStatusMap.values().stream().map(EmployeeStatusPastDto::getUnfinishedTasks).toArray(Integer[]::new));
+                yearStatusMap.values().stream().map(BaseEmployeeStatus::getUnfinishedTasks).toArray(Integer[]::new));
         ListSeries delayedTasks = new ListSeries(
                 "Delayed Tasks",
-                yearStatusMap.values().stream().map(EmployeeStatusPastDto::getDelayedTasks).toArray(Integer[]::new));
+                yearStatusMap.values().stream().map(BaseEmployeeStatus::getDelayedTasks).toArray(Integer[]::new));
+        ListSeries completedSprints = new ListSeries(
+                "CompletedSprints",
+                yearStatusMap.values().stream().map(BaseEmployeeStatus::getCompletedSprints).toArray(Integer[]::new));
 
-        Chart chart = CommonComponentUtil.setupChart(years, completedTasks, awaitingTasks, unfinishedTasks, delayedTasks);
+        Chart chart = CommonComponentUtil.setupChart(years, completedSprints, completedTasks, awaitingTasks, unfinishedTasks, delayedTasks);
         chart.getConfiguration().setTitle("Performance Graph");
         chart.getConfiguration().setSubTitle("Task performance of " + employee.getFirstName() + " " + employee.getLastName() + " over years as " + employee.getTitle());
         return chart;
     }
 
-    public Grid createSprintGrid() {
+    public Grid<EmployeeStatusPastDto> createSprintGrid() {
         Grid<EmployeeStatusPastDto> grid = new Grid<>(EmployeeStatusPastDto.class);
         grid.setColumns();
         grid.addColumn("year");
-        grid.addColumn(new ComponentRenderer<>(i -> new Paragraph(employee.getEmployeeStatus().getTitle()))).setHeader("Title");
+        grid.addColumn(new ComponentRenderer<>(i -> new Paragraph(employee.getTitle()))).setHeader("Title");
         grid.addColumn(new ComponentRenderer<>(i -> new Anchor(
                 "/teams/" + i.getTeamId().toString(),
                 experienceData.getTeamMap().get(i.getTeamId()).getName()))).setHeader("Team");
@@ -151,4 +155,15 @@ public class EmployeePage extends BaseLayout implements HasUrlParameter<Long> {
         return grid;
     }
 
+
+    private Map<Integer, BaseEmployeeStatus> getEmployeeStatus() {
+        HashMap<Integer, BaseEmployeeStatus> yearStatusMap = new HashMap<>();
+        for (EmployeeStatusPastDto experience : employee.getPastEmployeeStatus()) {
+            yearStatusMap.putIfAbsent(experience.getYear(), experience);
+        }
+        if (employee.getEmployeeStatus() != null) {
+            yearStatusMap.put(LocalDate.now().plusYears(1L).getYear(), employee.getEmployeeStatus());
+        }
+        return yearStatusMap;
+    }
 }

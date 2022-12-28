@@ -74,7 +74,7 @@ public class EmployeeBoard extends BaseLayout {
         ).setHeader("Id");
         grid.addColumns("firstName", "lastName", "email");
         grid.addColumn(new ComponentRenderer<>(
-                i -> new Anchor("/teams/" + i.getTeam().getId().toString(), i.getTeamName()))
+                i -> i.getTeam() != null ? new Anchor("/teams/" + i.getTeam().getId().toString(), i.getTeamName()) : new Paragraph(""))
         ).setHeader("Team");
         grid.addColumn("title");
         grid.getColumns().forEach(col -> col.setAutoWidth(true));

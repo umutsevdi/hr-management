@@ -13,7 +13,6 @@ import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.charts.Chart;
-import com.vaadin.flow.component.charts.model.ChartType;
 import com.vaadin.flow.component.charts.model.ListSeries;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
@@ -129,34 +128,47 @@ public class TeamPage extends BaseLayout implements HasUrlParameter<Long> {
 
     public Chart createWorkPerformanceGraph() {
         Map<Integer, List<BaseEmployeeStatus>> yearStatusMap = getEmployeeStatus();
-        Chart chart = new Chart(ChartType.LINE);
         String[] years = yearStatusMap.keySet().stream().map(String::valueOf).collect(Collectors.toList()).toArray(new String[yearStatusMap.size()]);
 
-        /*
-
         ListSeries completedTasks = new ListSeries(
                 "Completed Tasks",
-                yearStatusMap.values().stream().map(EmployeeStatusPastDto::getCompletedTasks).toArray(Integer[]::new));
+                yearStatusMap.values()
+                        .stream().map(i ->
+                                i.stream().map(BaseEmployeeStatus::getCompletedTasks).mapToInt(Integer::intValue)
+                                        .sum())
+                        .toArray(Integer[]::new));
 
-        ListSeries completedTasks = new ListSeries(
-                "Completed Tasks",
-                yearStatusMap.values().stream().map(EmployeeStatusPastDto::getCompletedTasks).toArray(Integer[]::new));
         ListSeries awaitingTasks = new ListSeries(
                 "Awaiting Tasks",
-                yearStatusMap.values().stream().map(EmployeeStatusPastDto::getAwaitingTasks).toArray(Integer[]::new));
+                yearStatusMap.values()
+                        .stream().map(i ->
+                                i.stream().map(BaseEmployeeStatus::getAwaitingTasks).mapToInt(Integer::intValue)
+                                        .sum())
+                        .toArray(Integer[]::new));
         ListSeries unfinishedTasks = new ListSeries(
                 "Unfinished Tasks",
-                yearStatusMap.values().stream().map(EmployeeStatusPastDto::getUnfinishedTasks).toArray(Integer[]::new));
+                yearStatusMap.values()
+                        .stream().map(i ->
+                                i.stream().map(BaseEmployeeStatus::getUnfinishedTasks).mapToInt(Integer::intValue)
+                                        .sum())
+                        .toArray(Integer[]::new));
         ListSeries delayedTasks = new ListSeries(
                 "Delayed Tasks",
-                yearStatusMap.values().stream().map(EmployeeStatusPastDto::getDelayedTasks).toArray(Integer[]::new));
-        Configuration conf = chart.getConfiguration();
-
-        setupChart(chart, years, completedTasks, awaitingTasks, unfinishedTasks, delayedTasks);
-        conf.setTitle("Performance Graph");
-        conf.setSubTitle("Task performance of " + employee.getFirstName() + " " + employee.getLastName() + " over years as " + employee.getTitle());
-
-         */
+                yearStatusMap.values()
+                        .stream().map(i ->
+                                i.stream().map(BaseEmployeeStatus::getUnfinishedTasks).mapToInt(Integer::intValue)
+                                        .sum())
+                        .toArray(Integer[]::new));
+        ListSeries completedSprints = new ListSeries(
+                "CompletedSprints",
+                yearStatusMap.values()
+                        .stream().map(i ->
+                                i.stream().map(BaseEmployeeStatus::getCompletedSprints).mapToInt(Integer::intValue)
+                                        .sum())
+                        .toArray(Integer[]::new));
+        Chart chart = CommonComponentUtil.setupChart(years, completedSprints, completedTasks, awaitingTasks, unfinishedTasks, delayedTasks);
+        chart.getConfiguration().setTitle("Performance Graph");
+        chart.getConfiguration().setSubTitle("Task performance of " + team.getName() + " over years");
         return chart;
     }
 

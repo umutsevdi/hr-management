@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Collections;
 import java.util.List;
 
 @Getter
@@ -44,18 +45,24 @@ public class EmployeeView extends EmployeeDto {
     }
 
     public EmployeeView(EmployeeDto employeeDto, TeamDto team, EmployeeStatusDto employeeStatus) {
-        this(employeeDto, team, null, employeeStatus);
+        this(employeeDto, team, Collections.emptyList(), employeeStatus);
     }
 
     public EmployeeView(EmployeeDto employeeDto, TeamDto team) {
-        this(employeeDto, team, null, null);
+        this(employeeDto, team, Collections.emptyList(), null);
     }
 
     public String getTitle() {
+        if (getEmployeeStatus() == null) {
+            return "Unassigned";
+        }
         return getEmployeeStatus().getTitle();
     }
 
     public String getTeamName() {
+        if (getEmployeeStatus() == null) {
+            return "Unassigned";
+        }
         return getTeam().getName();
     }
 

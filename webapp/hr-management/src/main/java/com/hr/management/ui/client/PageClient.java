@@ -59,6 +59,8 @@ public class PageClient {
                                 employeeStatusPastMap.get(i.getId()),
                                 employeeStatusMap.get(i.getId()))
                 );
+            } else {
+                employeeViewCollection.add(new EmployeeView(i, null));
             }
         }
         return employeeViewCollection;

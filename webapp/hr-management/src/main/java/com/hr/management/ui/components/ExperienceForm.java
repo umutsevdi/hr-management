@@ -110,6 +110,10 @@ public class ExperienceForm extends FormLayout implements FormComponent<Employee
 
     @Override
     public void fillFieldsWith(EmployeeView employeeView) {
+        if (employeeView.getEmployeeStatus() == null) {
+            resetFields();
+            return;
+        }
         title.setValue(employeeView.getEmployeeStatus().getTitle());
         workingHour.setValue(Double.valueOf(employeeView.getEmployeeStatus().getWorkingHour()));
         completedSprints.setValue(Double.valueOf(employeeView.getEmployeeStatus().getCompletedSprints()));
