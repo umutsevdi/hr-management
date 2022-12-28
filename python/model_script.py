@@ -12,15 +12,17 @@ lbe = pickle.load(open("laberEnacoder", 'rb'))
 columns = ['working_hour', 'sprint', 'sprint_tasks_awaiting', 'tasks_completed','tasks_delayed', 'tasks_incomplete', 
            'team_score_avg', 'title']
 df = pd.read_csv("new_data.csv")
+ids = df['e_id']
 df = df[columns]
+
 
 #label encoding
 df["title"] = lbe.transform(df["title"])
 #scaling
 df = pd.DataFrame(scaler.transform(df), columns = columns)
 
-y_pred = model.predict(df)
 y_pred = y_pred.astype(int)
-enf = 0.50
+enf = 0.5
 y_pred = y_pred * (1+enf)
-pd.DataFrame(y_pred).to_json("result.json")
+df = pd.DataFrame({'e_id': ids, 'salary': y_pred}, columns=['e_id', 'salary'])
+pd.DataFrame(df).to_json("result.json")
