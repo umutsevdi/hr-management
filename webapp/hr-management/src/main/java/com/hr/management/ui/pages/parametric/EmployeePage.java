@@ -1,5 +1,6 @@
 package com.hr.management.ui.pages.parametric;
 
+import com.hr.management.api.service.AnalyticsService;
 import com.hr.management.api.service.model.BaseEmployeeStatus;
 import com.hr.management.api.service.model.EmployeeDto;
 import com.hr.management.api.service.model.EmployeeStatusPastDto;
@@ -38,6 +39,7 @@ import java.util.stream.Collectors;
 @Getter
 @Log4j2
 public class EmployeePage extends BaseLayout implements HasUrlParameter<Long> {
+    AnalyticsService analyticsService;
     Long employeeId;
     EmployeeView employee;
 
@@ -56,8 +58,9 @@ public class EmployeePage extends BaseLayout implements HasUrlParameter<Long> {
         }
     }
 
-    public EmployeePage(PageClient pageClient) {
+    public EmployeePage(AnalyticsService analyticsService, PageClient pageClient) {
         super(pageClient);
+        this.analyticsService = analyticsService;
         setSizeFull();
     }
 
@@ -92,6 +95,7 @@ public class EmployeePage extends BaseLayout implements HasUrlParameter<Long> {
         HorizontalLayout horizontalLayout = new HorizontalLayout(createSalaryGraph(), createWorkPerformanceGraph());
         horizontalLayout.setAlignItems(Alignment.CENTER);
         horizontalLayout.setWidthFull();
+        add(new Paragraph("Predicted salary for the next year: " + analyticsService.getSalary(employee.getId())));
         add(horizontalLayout);
         add(createSprintGrid());
     }
