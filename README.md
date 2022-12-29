@@ -4,7 +4,7 @@
   </a>
 
 <p align="center">  
- Analysis of Working Data and Salary Determination System
+ Graphical analysis of employee data and salary determination
   <br/>
     <i>Developed by <a href="https://github.com/umutsevdi"> Umut Sevdi</a>,
     <a href="https://github.com/emrearslanoglu">Emre Arslanoglu</a></i>
