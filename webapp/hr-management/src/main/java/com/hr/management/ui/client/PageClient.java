@@ -155,8 +155,11 @@ public class PageClient {
     }
 
     public void save(EmployeeView employeeView) {
-
-
+        getEmployeeStatusService().update(employeeView.getEmployeeStatus());
+        getEmployeeService().update(employeeView);
     }
 
+    public void save(TeamView teamView) {
+        getTeamService().update(teamView);
+    }
 }

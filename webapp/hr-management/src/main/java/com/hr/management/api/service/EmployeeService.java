@@ -5,9 +5,7 @@ import com.hr.management.api.repository.EmployeeStatusRepository;
 import com.hr.management.api.repository.TeamRepository;
 import com.hr.management.api.repository.entity.Employee;
 import com.hr.management.api.repository.entity.EmployeeStatus;
-import com.hr.management.api.repository.entity.Team;
 import com.hr.management.api.service.model.EmployeeDto;
-import com.hr.management.api.service.model.TeamDto;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -69,22 +67,17 @@ public class EmployeeService {
                 .collect(Collectors.toList());
     }
 
-    public boolean create(EmployeeDto employeeDto) {
-        Employee employee = new Employee(employeeDto);
-        if (employee.getId() == null || !employeeRepository.existsById(employee.getId())) {
-            employee = employeeRepository.save(employee);
-            return true;
-        }
-        return false;
+    public void create(EmployeeDto employeeDto) {
+        employeeDto.setId(null);
+        employeeRepository.save(new Employee(employeeDto));
     }
 
-    public boolean update(TeamDto teamDto) {
-        Team team = new Team(teamDto);
-        if (teamRepository.existsById(team.getId())) {
-            Team updatedTeam = teamRepository.save(team);
-            return true;
+    public boolean update(EmployeeDto employeeDto) {
+        Employee employee = new Employee(employeeDto);
+        if (employeeRepository.existsById(employee.getId())) {
+            employeeRepository.save(employee);
         }
-        return false;
+        return employeeRepository.existsById(employee.getId());
     }
 
 

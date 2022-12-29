@@ -188,4 +188,8 @@ public class EmployeeStatusService {
         }
         return null;
     }
+
+    public void save(EmployeeStatusDto employeeStatusDto) {
+        employeeStatusRepository.save(new EmployeeStatus(employeeStatusDto));
+    }
 }
